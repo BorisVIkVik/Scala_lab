@@ -5,3 +5,4 @@ food.parquet
 /target/
 /project/
 /resources/
+/pyspark_env/
