@@ -6,3 +6,4 @@ food.parquet
 /project/
 /resources/
 /pyspark_env/
+/__pycache__/
