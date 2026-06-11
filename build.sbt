@@ -1,7 +1,8 @@
 name := "TestSpark"
 version := "1.0"
-libraryDependencies += "org.apache.spark" %% "spark-core" % "3.5.1"
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.5.1"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "3.4.0"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.4.0"
+libraryDependencies += "io.delta" %% "delta-core" % "2.4.0"
 
 // Разрешаем запуск в отдельном процессе (Fork)
 fork := true

@@ -1,55 +1,62 @@
-// FileDemo.scala - полное Spark-приложение на Scala
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SparkSession 
 object FileDemo {
   def main(args: Array[String]): Unit = {
-    // 1. Создаем Spark конфигурацию
     val conf = new SparkConf()
       .setAppName("FileReaderDemo")
-      .setMaster("local[2]") // локальный режим с 2 потоками
+      .setMaster("local[2]") 
+      .set("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+      .set("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+      .set("spark.jars.packages", "io.delta:delta-core_2.12:2.2.0") 
+      .set("spark.hadoop.dfs.client.use.datanode.hostname", "true") 
+      .set("spark.hadoop.dfs.datanode.use.datanode.hostname", "true") 
     
-    // 2. Создаем SparkContext
     val sc = new SparkContext(conf)
+    sc.setLogLevel("WARN")
+    // val df = sc.textFile("/Users/bw/GITS/ITMO/Scala_Lab/data/food.parquet")
     
-    // 3. Чтение текстового файла
-    val lines = sc.textFile("/Users/bw/GITS/ITMO/Scala_Lab/kek.txt")
-    
-    // 4. Подсчет строк
-    val lineCount = lines.count()
-    println(s"Количество строк в файле: $lineCount")
-    
-    // 5. Вывод всех строк
-    println("Содержимое файла:")
-    lines.foreach(println)
+  
 
 
      val spark = SparkSession.builder().config(conf).getOrCreate()
-    
-    // Импортируем магия .toDF() для преобразования RDD в DataFrame
+  
     import spark.implicits._
-    // val df = lines.toDF()
-    // df.write
-    //   .mode("overwrite")
-    //   .parquet("./resources/output_data")
-
-    val df = lines.toDF("line_text")
+    println("Начинаю загрузку!")
+    val df = spark.read.parquet("hdfs://localhost:8020/test/output.parquet")
+    println("Данные успешно загружены!")
+    val tmp = df.select("known_ingredients_n")
     
-    // Записываем DataFrame в формате Parquet
-    df.write
-      .mode("overwrite")
-      .parquet("./resources/output_data")
 
-    println("Данные успешно записаны в формат Parquet!")
+    val df_col = tmp.na.drop()
+    // val df = lines.toDF("line_text")
+    println("Колонка извлечена")
 
-    val df_kek = spark.read.parquet("./resources/output_data")
+    df_col.write
+      
+      .format("delta")
+      .save("")
+    val query = df_col.writeStream
+    .mode("overwrite")
+    .format("delta")                         // Target storage format
+    .outputMode("append")                      // Business logic for updates
+    .option("checkpointLocation", "path/chk/") // Crucial for fault tolerance
+    .option("path", "./resources/output_data")            // Destination path
+    .start()   
+    println("Данные успешно записаны в формат Delta!")
 
-    // 3. Выводим схему (структуру колонок), чтобы убедиться в корректности
-    df_kek.printSchema()
+    // val df_test = spark.read.format("delta").load("./resources/output_data")
+    // val df_kek = df_test.toDF()
 
-    // 4. Показываем первые 20 строк из всех партиций
-    df_kek.show(truncate = false)
+    // df_kek.printSchema()
+
+    // tmp.show(truncate = false)
+
+    // df_kek.show(truncate = false)
     
-    // 6. Завершение SparkContext
+
+    println(tmp.count())
+    println(df_kek.count())
+
     sc.stop()
   }
 }
