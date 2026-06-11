@@ -56,6 +56,8 @@ def handle_post():
     print("Cluster Centers: ")
     for center in centers:
         print(center)
+
+    print(df.count())
     # df = spark.createDataFrame(centers, IntegerType())
     # df.write.mode("overwrite").csv("hdfs://namenode:8020/test/output.csv")
     # print(spark)
