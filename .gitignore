@@ -1,0 +1,7 @@
+/spark_lab/
+food.parquet
+/.bsp/
+/.scala-build/
+/target/
+/project/
+/resources/
