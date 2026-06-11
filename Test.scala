@@ -1,3 +1,15 @@
+
+import akka.actor.ActorSystem
+import akka.http.scaladsl.client.RequestBuilding.Post
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
+import akka.http.scaladsl.Http
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
+
+
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SparkSession 
 object FileDemo {
@@ -32,18 +44,28 @@ object FileDemo {
     println("Колонка извлечена")
 
     df_col.write
-      
-      .format("delta")
-      .save("")
-    val query = df_col.writeStream
-    .mode("overwrite")
-    .format("delta")                         // Target storage format
-    .outputMode("append")                      // Business logic for updates
-    .option("checkpointLocation", "path/chk/") // Crucial for fault tolerance
-    .option("path", "./resources/output_data")            // Destination path
-    .start()   
-    println("Данные успешно записаны в формат Delta!")
+      .mode("overwrite")
+      .format("delta")                           
+      .save("./resources/output_data")
+    // val query = df_col.writeStream
+    implicit val system = ActorSystem("client")
+    val myBool = true
 
+    val request = Post("http://127.0.0.1:5000/api/endpoint", s"""{"bool":$myBool}""")
+      .withEntity(HttpEntity(ContentTypes.`application/json`, s"""{"bool":$myBool}"""))
+    println("Отправляю python!")
+    // .outputMode("append")                      // Business logic for updates
+    // .option("checkpointLocation", "path/chk/") // Crucial for fault tolerance
+    // .option("path", "")            // Destination path
+    // .start()   
+    // query.awaitTermination()  
+    val response = Await.result(Http().singleRequest(request), 180.seconds)
+    println(s"Ответ сервера: ${response.status}")
+    sc.stop()
+    spark.stop()
+    Http().shutdownAllConnectionPools()
+    system.terminate()
+    Await.result(system.whenTerminated, 10.seconds)
     // val df_test = spark.read.format("delta").load("./resources/output_data")
     // val df_kek = df_test.toDF()
 
@@ -54,9 +76,7 @@ object FileDemo {
     // df_kek.show(truncate = false)
     
 
-    println(tmp.count())
-    println(df_kek.count())
-
-    sc.stop()
+    // println(tmp.count())
+    // println(df_kek.count())
   }
 }

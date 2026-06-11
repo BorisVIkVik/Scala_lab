@@ -21,7 +21,7 @@ spark = SparkSession.builder.appName("MyApp").master("local[*]") \
     .config("spark.hadoop.dfs.client.use.datanode.hostname", "true") \
     .config("spark.hadoop.dfs.datanode.use.datanode.hostname", "true") \
     .getOrCreate()
-df = spark.read.parquet('/Users/bw/GITS/ITMO/Scala_Lab/data/food.parquet').limit(100)
+df = spark.read.parquet('/Users/bw/GITS/ITMO/Scala_Lab/data/food.parquet').limit(1000)
 
 # df1 = spark.createDataFrame(df)
 # df = df
