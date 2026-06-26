@@ -24,7 +24,7 @@ for key, value in cfg['spark']['configs'].items():
 
 spark = builder.getOrCreate()
 
-df = spark.read.parquet('../data/food.parquet').limit(1000)
+df = spark.read.parquet('data/food.parquet').limit(1000)
 
 
 df.write.mode("overwrite").parquet("hdfs://localhost:8020/test/output.parquet")

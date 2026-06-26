@@ -5,6 +5,7 @@ from pyspark.sql.types import IntegerType
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.feature import VectorAssembler
 from delta import configure_spark_with_delta_pip
+from delta.tables import DeltaTable
 
 def clasterisation():
     with open('config/app_spark_config.yaml') as f:
@@ -18,12 +19,12 @@ def clasterisation():
         builder = builder.config(key, value)
 
 
-    spark = builder.getOrCreate()
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
-    df = spark.read.format('delta').load('./resources/output_data')
-    from delta.tables import DeltaTable
+    df = spark.read.format('delta').load('resources/output_data')
+    
 
-    path = "./resources/output_data"
+    path = "resources/output_data"
 
     dt = DeltaTable.forPath(spark, path).toDF()
     dt.show(truncate=False)
