@@ -1,4 +1,4 @@
-# Викторов Борис Лабораторная 5.
+# Викторов Борис Лабораторная 7.
 
 Работа посвящена pyspark и Scala витрине.
 
@@ -8,6 +8,7 @@ https://huggingface.co/datasets/openfoodfacts/product-database
 ## Модель: KMeans
 
 ## Database/FileSystem: HDFS
+Был взят как копия ветки docker репозитория https://github.com/apache/hadoop/tree/docker-hadoop-3
 
 ## Структура
 ```
@@ -26,13 +27,23 @@ https://huggingface.co/datasets/openfoodfacts/product-database
     src: Папка для кода модели.
     hadoop: Папка для кода hdfs с docker.
 ## Запуск
+Вариант 1:
+
 HDFS:
+
     docker compose -f ./hadoop/docker-compose.yaml --project-directory ./hadoop up -d
 Когда HDFS загружен запускаем код для загрузки данных:
+
     python src/load.py
 После запускаем Flask сервер:
+
     python main.py
 Дальше запускаем Scala витрину:
+
     sbt run
+
+
+Вариант 2:
     
+    ./run_app.sh
 
