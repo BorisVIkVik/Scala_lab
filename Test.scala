@@ -25,12 +25,8 @@ object FileDemo {
     
     val sc = new SparkContext(conf)
     sc.setLogLevel("WARN")
-    // val df = sc.textFile("/Users/bw/GITS/ITMO/Scala_Lab/data/food.parquet")
     
-  
-
-
-     val spark = SparkSession.builder().config(conf).getOrCreate()
+    val spark = SparkSession.builder().config(conf).getOrCreate()
   
     import spark.implicits._
     println("Начинаю загрузку!")
@@ -40,25 +36,19 @@ object FileDemo {
     
 
     val df_col = tmp.na.drop()
-    // val df = lines.toDF("line_text")
     println("Колонка извлечена")
 
     df_col.write
       .mode("overwrite")
       .format("delta")                           
       .save("./resources/output_data")
-    // val query = df_col.writeStream
     implicit val system = ActorSystem("client")
     val myBool = true
 
     val request = Post("http://127.0.0.1:5000/api/endpoint", s"""{"bool":$myBool}""")
       .withEntity(HttpEntity(ContentTypes.`application/json`, s"""{"bool":$myBool}"""))
     println("Отправляю python!")
-    // .outputMode("append")                      // Business logic for updates
-    // .option("checkpointLocation", "path/chk/") // Crucial for fault tolerance
-    // .option("path", "")            // Destination path
-    // .start()   
-    // query.awaitTermination()  
+
     val response = Await.result(Http().singleRequest(request), 180.seconds)
     println(s"Ответ сервера: ${response.status}")
     
@@ -75,11 +65,5 @@ object FileDemo {
     Http().shutdownAllConnectionPools()
     system.terminate()
     Await.result(system.whenTerminated, 10.seconds)
-    // val df_test = spark.read.format("delta").load("./resources/output_data")
-    // val df_kek = df_test.toDF()
-
-    // df_kek.printSchema()
-
-
   }
 }

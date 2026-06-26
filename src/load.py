@@ -1,10 +1,15 @@
-# from pyspark.sql import SparkSession
 import os
 from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.feature import VectorAssembler
-# from pyspark.pandas import read_parquet
+
+from hdfs import InsecureClient
+
+client = InsecureClient('http://localhost:9870', user='root')
+client.makedirs('/test')
+client.set_permission('/test', '777')
+
 os.environ["PYARROW_IGNORE_TIMEZONE"] = "1" 
 spark = SparkSession.builder.appName("MyApp").master("local[*]") \
      .config("spark.driver.memory", "8g") \

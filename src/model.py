@@ -1,20 +1,11 @@
-# from pyspark.sql import SparkSession
 import os
 from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.feature import VectorAssembler
-# from pyspark.pandas import read_parquet
 from delta import configure_spark_with_delta_pip
 
-from flask import Flask, request
-import json
-
-app = Flask(__name__)
-
-@app.route('/api/endpoint', methods=['POST'])
-def handle_post():
-    data = request.json
+def clasterisation():
     os.environ["PYARROW_IGNORE_TIMEZONE"] = "1" 
     spark = configure_spark_with_delta_pip(SparkSession.builder.appName("MyApp").master("local[*]") \
         .config("spark.driver.memory", "8g") \
@@ -37,15 +28,11 @@ def handle_post():
 
     dt = DeltaTable.forPath(spark, path).toDF()
     dt.show(truncate=False)
-    # history = dt.history(1)
-    # history.show(truncate=False)
 
-    # df2 = assembler.transform(df.fillna(0, subset=["with_sweeteners"]))
-    # del df
     assembler = VectorAssembler(
-    inputCols=["known_ingredients_n"],
-    outputCol="features"
-)
+        inputCols=["known_ingredients_n"],
+        outputCol="features"
+    )
 
     df2 = assembler.transform(df)
     kmeans = KMeans(featuresCol='features',k=2)
@@ -58,12 +45,6 @@ def handle_post():
         print(center)
 
     print(df.count())
-    # df = spark.createDataFrame(centers, IntegerType())
-    # df.write.mode("overwrite").csv("hdfs://namenode:8020/test/output.csv")
-    # print(spark)
+
     spark.stop()
-    return {'status': 'ok'}
-
-
-if __name__ == '__main__':
-    app.run(port=5000)
+    return centers

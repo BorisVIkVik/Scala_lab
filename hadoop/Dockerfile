@@ -21,8 +21,3 @@ WORKDIR /opt/hadoop
 ADD log4j.properties /opt/hadoop/etc/hadoop/log4j.properties
 RUN sudo chown -R hadoop:users /opt/hadoop/etc/hadoop/*
 ENV HADOOP_CONF_DIR /opt/hadoop/etc/hadoop
-# RUN pip install pyspark
-# RUN hdfs namenode 
-# RUN hdfs dfs -mkdir /test 
-# RUN hdfs dfs -put /data/food.parquet /test 
-# RUN hdfs dfs -ls /test/"

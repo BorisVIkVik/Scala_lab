@@ -20,7 +20,7 @@ HDFS-SITE.XML_dfs.replication=1
 # Клиент подключается к datanode по hostname, а не по 172.18.x.x
 HDFS-SITE.XML_dfs.client.use.datanode.hostname=true
 HDFS-SITE.XML_dfs.datanode.use.datanode.hostname=true
-
+HDFS-SITE.XML_dfs.permissions.enabled=false
 MAPRED-SITE.XML_mapreduce.framework.name=yarn
 MAPRED-SITE.XML_yarn.app.mapreduce.am.env=HADOOP_MAPRED_HOME=$HADOOP_HOME
 MAPRED-SITE.XML_mapreduce.map.env=HADOOP_MAPRED_HOME=$HADOOP_HOME
