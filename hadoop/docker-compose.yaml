@@ -18,7 +18,7 @@ services:
    namenode:
       build: .
       hostname: namenode
-      command: bash -c "hdfs namenode && hdfs dfs -mkdir /test && hdfs dfs -put /data/food.parquet /test && hdfs dfs -ls /test/"
+      command: bash -c "hdfs namenode && hdfs dfs -mkdir /test"
       platform: linux/arm64
       ports:
         - 9870:9870

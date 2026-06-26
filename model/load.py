@@ -21,33 +21,9 @@ spark = SparkSession.builder.appName("MyApp").master("local[*]") \
     .config("spark.hadoop.dfs.client.use.datanode.hostname", "true") \
     .config("spark.hadoop.dfs.datanode.use.datanode.hostname", "true") \
     .getOrCreate()
-df = spark.read.parquet('/Users/bw/GITS/ITMO/Scala_Lab/data/food.parquet').limit(500)
+df = spark.read.parquet('/Users/bw/GITS/ITMO/Scala_Lab/data/food.parquet').limit(1000)
 
-# df1 = spark.createDataFrame(df)
-# df = df
-# df_single = df.select("with_sweeteners").dropna()
-# # del df
-# print()
-# df.show()
-# print(f'Hello count: {df_single.count()}')
-# # del df_single
 
-# assembler = VectorAssembler(
-#     inputCols=["with_sweeteners"],
-#     outputCol="features"
-# )
-
-# df2 = assembler.transform(df.fillna(0, subset=["with_sweeteners"]))
-# # del df
-# kmeans = KMeans(featuresCol='features',k=2)
-# model = kmeans.fit(df2)
-# predictions = model.transform(df2)
-
-# centers = model.clusterCenters()
-# print("Cluster Centers: ")
-# for center in centers:
-#     print(center)
-# df = spark.createDataFrame(centers, IntegerType())
 df.write.mode("overwrite").parquet("hdfs://localhost:8020/test/output.parquet")
 print(spark)
 spark.stop()

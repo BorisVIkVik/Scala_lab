@@ -61,6 +61,15 @@ object FileDemo {
     // query.awaitTermination()  
     val response = Await.result(Http().singleRequest(request), 180.seconds)
     println(s"Ответ сервера: ${response.status}")
+    
+    
+    tmp.show(truncate = false)
+
+    df_col.show(truncate = false)
+    
+
+    println(tmp.count())
+    println(df_col.count())
     sc.stop()
     spark.stop()
     Http().shutdownAllConnectionPools()
@@ -71,12 +80,6 @@ object FileDemo {
 
     // df_kek.printSchema()
 
-    // tmp.show(truncate = false)
 
-    // df_kek.show(truncate = false)
-    
-
-    // println(tmp.count())
-    // println(df_kek.count())
   }
 }
