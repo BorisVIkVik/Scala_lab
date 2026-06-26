@@ -28,7 +28,7 @@ services:
       environment:
           ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
       volumes:
-      - /Users/bw/GITS/ITMO/SPARL_LAB2/data:/data
+      - ../data:/data
    datanode1:
       build: .
       command: >
@@ -45,7 +45,7 @@ services:
         HDFS-SITE.XML_dfs.datanode.address: 0.0.0.0:9867
         HDFS-SITE.XML_dfs.datanode.ipc.address: 0.0.0.0:9865
       volumes:
-      - /Users/bw/GITS/ITMO/SPARL_LAB2/data:/data
+      - ../data:/data
    resourcemanager:
       build: .
       hostname: resourcemanager

@@ -1,4 +1,5 @@
 import os
+import yaml
 from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType
 from pyspark.ml.clustering import KMeans
@@ -6,21 +7,19 @@ from pyspark.ml.feature import VectorAssembler
 from delta import configure_spark_with_delta_pip
 
 def clasterisation():
+    with open('config/app_spark_config.yaml') as f:
+        cfg = yaml.safe_load(f)
+
     os.environ["PYARROW_IGNORE_TIMEZONE"] = "1" 
-    spark = configure_spark_with_delta_pip(SparkSession.builder.appName("MyApp").master("local[*]") \
-        .config("spark.driver.memory", "8g") \
-        .config("spark.executor.memory", "2g") \
-        .config("spark.driver.maxResultSize", "2g") \
-        .config("spark.sql.adaptive.enabled", "true") \
-        .config("spark.sql.adaptive.coalescePartitions.enabled", "true") \
-        .config("spark.sql.shuffle.partitions", "8") \
-        .config("spark.default.parallelism", "8") \
-        .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
-        .config("spark.sql.execution.arrow.pyspark.enabled", "true") \
-        .config("spark.sql.files.maxPartitionBytes", "64m") \
-        .config("spark.sql.files.openCostInBytes", "4194304") \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")).getOrCreate()
+    builder = SparkSession.builder.appName(cfg['spark']['app_name']).master(cfg['spark']['master'])
+        
+
+    for key, value in cfg['spark']['configs'].items():
+        builder = builder.config(key, value)
+
+
+    spark = builder.getOrCreate()
+
     df = spark.read.format('delta').load('./resources/output_data')
     from delta.tables import DeltaTable
 
